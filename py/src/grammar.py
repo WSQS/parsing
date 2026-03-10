@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
 
+
 def is_non_terminal(token: str):
     return token[0].isupper()
+
 
 @dataclass
 class Grammar:

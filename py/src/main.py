@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Generator
 from grammar import Grammar, is_non_terminal
 
+
 @dataclass
 class Sentence:
     token: list[str]
