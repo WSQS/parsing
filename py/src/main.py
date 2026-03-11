@@ -131,7 +131,9 @@ def parse_substring(g: Grammar, ts: Sentence, symbol: str, context: Context):
     return result
 
 
-def parse(g: Grammar, ts: Sentence, context: Context):
+def parse(g: Grammar, ts: Sentence):
+    context = Context()
+    precompute(g, context)
     return parse_substring(g, ts, g.start_symbol, context)
 
 
@@ -145,8 +147,6 @@ def main():
     with open(args.grammar, "r", encoding="utf-8") as f:
         s_g = f.read()
     g = parse_grammar(s_g)
-    context = Context()
-    precompute(g, context)
     print(g)
     with open(args.input, "r", encoding="utf-8") as f:
         s_i = f.read()
@@ -155,7 +155,7 @@ def main():
         if token not in g.terminal:
             msg = f"It's not a non terminal in grammar:{token!r}"
             raise ValueError(msg)
-    parse_tree_grammar = parse(g, Sentence(tokens), context)
+    parse_tree_grammar = parse(g, Sentence(tokens))
     print(parse_tree_grammar)
     for l, rs in parse_tree_grammar.rule:
         for r in rs:
