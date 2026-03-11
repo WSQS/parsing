@@ -15,6 +15,32 @@ class Sentence:
 class Context:
     substring_stack: list[str] = field(default_factory=list[str])
     negative_substrings: list[str] = field(default_factory=list[str])
+    non_terminal_min_len: dict[str, int] = field(default_factory=dict[str, int])
+
+
+def precompute(g: Grammar, context: Context):
+    context.non_terminal_min_len.clear()
+    update = True
+    while update:
+        update = False
+        for l, rs in g.rule:
+            length = 0
+            for r in rs:
+                if is_non_terminal(r):
+                    if r not in context.non_terminal_min_len:
+                        length = -1
+                        break
+                    length += context.non_terminal_min_len[r]
+                else:
+                    length += 1
+            if length == -1:
+                continue
+            if (
+                l not in context.non_terminal_min_len
+                or context.non_terminal_min_len[l] > length
+            ):
+                update = True
+                context.non_terminal_min_len[l] = length
 
 
 def group_into(n_element: int, groups: list[int]) -> Generator[list[int], Any, None]:
@@ -51,10 +77,10 @@ def parse_substring(g: Grammar, ts: Sentence, symbol: str, context: Context):
         groups: list[int] = []
         for r in rs:
             if is_non_terminal(r):
-                if r not in g.non_terminal_min_len:
+                if r not in context.non_terminal_min_len:
                     msg = f"Can't get min length for non terminal: {r!r}"
                     raise ValueError(msg)
-                groups.append(g.non_terminal_min_len[r])
+                groups.append(context.non_terminal_min_len[r])
             else:
                 groups.append(1)
         for group_info in group_into(len(ts.token), groups):
@@ -105,8 +131,8 @@ def parse_substring(g: Grammar, ts: Sentence, symbol: str, context: Context):
     return result
 
 
-def parse(g: Grammar, ts: Sentence):
-    return parse_substring(g, ts, g.start_symbol, Context())
+def parse(g: Grammar, ts: Sentence, context: Context):
+    return parse_substring(g, ts, g.start_symbol, context)
 
 
 def main():
@@ -119,7 +145,8 @@ def main():
     with open(args.grammar, "r", encoding="utf-8") as f:
         s_g = f.read()
     g = parse_grammar(s_g)
-    g.precompute()
+    context = Context()
+    precompute(g, context)
     print(g)
     with open(args.input, "r", encoding="utf-8") as f:
         s_i = f.read()
@@ -128,7 +155,7 @@ def main():
         if token not in g.terminal:
             msg = f"It's not a non terminal in grammar:{token!r}"
             raise ValueError(msg)
-    parse_tree_grammar = parse(g, Sentence(tokens))
+    parse_tree_grammar = parse(g, Sentence(tokens), context)
     print(parse_tree_grammar)
     for l, rs in parse_tree_grammar.rule:
         for r in rs:
