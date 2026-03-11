@@ -9,6 +9,7 @@ def is_non_terminal(token: str):
 class Grammar:
     non_terminal: set[str] = field(default_factory=set[str])
     terminal: set[str] = field(default_factory=set[str])
+    # Epsilon is represented by empty list in right side
     rule: list[tuple[str, list[str]]] = field(
         default_factory=list[tuple[str, list[str]]]
     )
