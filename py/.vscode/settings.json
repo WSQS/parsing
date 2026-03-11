@@ -1,5 +1,6 @@
 {
     "python.analysis.autoImportCompletions": true,
     "python.analysis.completeFunctionParens": true,
-    "python.analysis.typeCheckingMode": "strict"
+    "python.analysis.typeCheckingMode": "strict",
+    "github.copilot.chat.copilotMemory.enabled": true
 }
