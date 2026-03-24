@@ -1,4 +1,4 @@
-from grammar import Grammar, is_non_terminal
+from .grammar import Grammar, is_non_terminal
 
 
 def get_epsilon_non_terminal(g: Grammar):
