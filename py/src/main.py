@@ -1,6 +1,6 @@
 import argparse
-from grammar import parse_grammar
-from unger import parse
+from parsing.grammar import parse_grammar
+from parsing.unger import parse
 
 
 def main():
