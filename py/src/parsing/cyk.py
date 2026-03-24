@@ -47,19 +47,16 @@ def eliminate_epsilon_non_terminal(g: Grammar, non_terminal: str):
                         rs_result.append(new_rs2)
         for i_rs in rs_result:
             new_rule.append((l, i_rs))
-    g.rule = new_rule
-    new_rule = []
-    for l, rs in g.rule:
-        if l != non_terminal and len(rs) == 0:
-            continue
-        new_rule.append((l, rs))
-    g.rule = new_rule
+    g.rule = new_rule[:]
+    for l, rs in new_rule:
+        if l == non_terminal and len(rs) > 0:
+            g.rule.append((l + "'", rs))
 
 
 def eliminate_epsilon_rules(g: Grammar):
     epsilon_non_terminals = get_epsilon_non_terminal(g)
     for epsilon_non_terminal in epsilon_non_terminals:
-        eliminate_epsilon_non_terminal(g,epsilon_non_terminal)
+        eliminate_epsilon_non_terminal(g, epsilon_non_terminal)
 
 
 def to_cnf(g: Grammar):
